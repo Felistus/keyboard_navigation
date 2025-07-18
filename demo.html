@@ -8,7 +8,6 @@
     <script src="navigationAZ.js"></script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             max-width: 1200px;
             margin: 0 auto;
@@ -23,29 +22,6 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-        .nav-demo {
-            background: #e8f4f8;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 6px;
-            border-left: 4px solid #2196F3;
-        }
-
-        .sidebar {
-            background: #f0f0f0;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 6px;
-        }
-
         .content-section {
             margin: 30px 0;
             padding: 20px;
@@ -54,7 +30,6 @@
         }
 
         .form-demo {
-            background: #f9f9f9;
             padding: 20px;
             border-radius: 6px;
             margin: 20px 0;
@@ -72,17 +47,12 @@
         }
 
         .form-demo button {
-            background: #4CAF50;
             color: white;
             padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
-        }
-
-        .form-demo button:hover {
-            background: #45a049;
+            background-color: blue;
         }
 
         .link-grid {
@@ -101,78 +71,16 @@
             color: #333;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .link-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 12px;
-            z-index: 1000;
-        }
-
-        .controls h4 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-        }
-
-        .controls kbd {
-            background: #444;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-
-        .dynamic-content {
-            min-height: 50px;
-            padding: 15px;
-            border: 2px dashed #ccc;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .controls {
-                position: static;
-                margin-bottom: 20px;
-            }
-
-            .link-grid {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 
 <body>
-    <div class="controls">
-        <h4>🎯 Keyboard Navigation</h4>
-        <div><kbd>H</kbd> = Headers</div>
-        <div><kbd>L</kbd> = Links</div>
-        <div><kbd>M</kbd> = Landmarks</div>
-        <div><kbd>↑</kbd> = Backward</div>
-        <div><kbd>↓</kbd> = Forward</div>
-        <div style="margin-top: 10px; font-size: 10px; opacity: 0.8;"> Navigation ignored when form fields are focused
-        </div>
-    </div>
     <div class="container">
         <header class="header" role="banner">
             <h1>Keyboard Navigation Demo</h1>
             <p>Test accessibility features with keyboard-only navigation</p>
         </header>
-        <nav class="nav-demo" role="navigation">
+        <nav role="navigation">
             <h2>Navigation Menu</h2>
             <a href="#section1">Section 1</a> | <a href="#section2">Section 2</a> | <a href="#section3">Section 3</a> |
             <a href="#forms">Forms</a> | <a href="#dynamic">Dynamic Content</a>
@@ -202,28 +110,6 @@
                 <p>More content with <a href="#inline">inline links</a> and <a href="#another">another link</a> for
                     testing.</p>
             </section>
-            <aside class="sidebar" role="complementary">
-                <h2>Sidebar Content</h2>
-                <p>This sidebar demonstrates the landmark navigation feature.</p>
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="#quick1">Quick Link 1</a></li>
-                    <li><a href="#quick2">Quick Link 2</a></li>
-                    <li><a href="#quick3">Quick Link 3</a></li>
-                </ul>
-            </aside>
-            <section id="section2" class="content-section">
-                <h2>Section 2: More Headers</h2>
-                <p>This section contains multiple header levels to test header navigation.</p>
-                <h3>Level 3 Header</h3>
-                <p>Content under level 3 header with <a href="#test">a test link</a>.</p>
-                <h4>Level 4 Header</h4>
-                <p>Content under level 4 header.</p>
-                <h5>Level 5 Header</h5>
-                <p>Content under level 5 header with <a href="#deep">deep link</a>.</p>
-                <h6>Level 6 Header</h6>
-                <p>The deepest header level.</p>
-            </section>
             <section id="forms" class="content-section">
                 <h2>Section 3: Form Testing</h2>
                 <p>Test how keyboard navigation behaves when form fields are focused.</p>
@@ -245,29 +131,9 @@
                     <button type="submit">Submit Form</button>
                 </form>
             </section>
-            <section id="dynamic" class="content-section">
-                <h2>Section 4: Dynamic Content Testing</h2>
-                <p>Test how the navigation adapts to dynamically added content.</p>
-                <div class="dynamic-content" id="dynamicContent">
-                    <p>Click the buttons below to add/remove content dynamically</p>
-                </div>
-                <button onclick="addContent()">Add Content</button>
-                <button onclick="removeContent()">Remove Content</button>
-                <button onclick="addLinks()">Add Links</button>
-                <button onclick="addHeaders()">Add Headers</button>
-            </section>
         </main>
-        <footer class="content-section" role="contentinfo">
-            <h2>Footer</h2>
-            <p>This footer demonstrates the contentinfo landmark.</p>
-            <p>
-                <a href="#top">Back to Top</a> | <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms of
-                    Service</a>
-            </p>
-        </footer>
     </div>
     <script>
-        // Load the keyboard navigation utility
         initKeyboardNav()
     </script>
 </body>

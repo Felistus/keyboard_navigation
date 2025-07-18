@@ -1,5 +1,4 @@
 function initKeyboardNav() {
-  // Configuration
   const CONFIG = {
     keys: {
       HEADER: "KeyH",
@@ -60,7 +59,6 @@ function initKeyboardNav() {
     },
   };
 
-  // State management
   let state = {
     flow: "forward",
     elements: {
@@ -77,9 +75,7 @@ function initKeyboardNav() {
     isActive: true,
   };
 
-  // Utility functions
   const utils = {
-    // Check if element is visible and interactable
     isElementVisible(element) {
       if (!element || !element.offsetParent) return false;
 
@@ -95,7 +91,6 @@ function initKeyboardNav() {
       );
     },
 
-    // Check if element is focusable
     isFocusable(element) {
       if (!element) return false;
 
@@ -112,20 +107,16 @@ function initKeyboardNav() {
       );
     },
 
-    // Get visible and valid elements
     getValidElements(selector) {
       const elements = Array.from(document.querySelectorAll(selector));
       return elements.filter((el) => {
-        // Skip if element is not visible
         if (!this.isElementVisible(el)) return false;
 
-        // For landmarks, ensure they have meaningful content or proper role
         if (selector.includes("role=")) {
           const role = el.getAttribute("role");
           if (!role || role === "presentation" || role === "none") return false;
         }
 
-        // For links, ensure they have href and are not just anchors
         if (el.tagName.toLowerCase() === "a" && !el.getAttribute("href")) {
           return false;
         }
@@ -134,7 +125,6 @@ function initKeyboardNav() {
       });
     },
 
-    // Scroll element into view smoothly
     scrollToElement(element) {
       if (!element) return;
 
@@ -149,26 +139,21 @@ function initKeyboardNav() {
       });
     },
 
-    // Add focus styling
     addFocusStyle(element) {
       if (!element) return;
 
-      // Remove previous focus
       this.removeFocusStyle();
 
       element.classList.add(CONFIG.styles.focusClass);
       state.lastFocusedElement = element;
 
-      // Set actual focus for screen readers
       if (this.isFocusable(element)) {
         element.focus();
       } else {
-        // Make temporarily focusable for screen readers
         const originalTabIndex = element.getAttribute("tabindex");
         element.setAttribute("tabindex", "-1");
         element.focus();
 
-        // Restore original tabindex after focus
         setTimeout(() => {
           if (originalTabIndex === null) {
             element.removeAttribute("tabindex");
@@ -179,7 +164,6 @@ function initKeyboardNav() {
       }
     },
 
-    // Remove focus styling
     removeFocusStyle() {
       if (state.lastFocusedElement) {
         state.lastFocusedElement.classList.remove(CONFIG.styles.focusClass);
@@ -187,7 +171,6 @@ function initKeyboardNav() {
       }
     },
 
-    // Check if currently focused element is a form field
     isFormFieldFocused() {
       const activeElement = document.activeElement;
       if (!activeElement) return false;
@@ -202,7 +185,6 @@ function initKeyboardNav() {
       );
     },
 
-    // Announce to screen readers
     notifyScreenReader(message) {
       const announcement = document.createElement("div");
       announcement.setAttribute("aria-live", "polite");
@@ -225,9 +207,7 @@ function initKeyboardNav() {
     },
   };
 
-  // Element collection and management
   const elementManager = {
-    // Collect all navigable elements
     collectElements() {
       state.elements.headers = utils.getValidElements(CONFIG.selectors.headers);
       state.elements.links = utils.getValidElements(CONFIG.selectors.links);
@@ -235,13 +215,11 @@ function initKeyboardNav() {
         CONFIG.selectors.landmarks
       );
 
-      // Reset indices when elements change
       state.defaultIndices.headers = -1;
       state.defaultIndices.links = -1;
       state.defaultIndices.landmarks = -1;
     },
 
-    // Get next element in specified flow
     getNextElement(type) {
       const elements = state.elements[type];
       if (!elements || elements.length === 0) return null;
@@ -259,7 +237,6 @@ function initKeyboardNav() {
       return elements[currentIndex];
     },
 
-    // Navigate to next element of specified type
     navigateToNext(type) {
       const element = this.getNextElement(type);
       if (!element) {
@@ -270,7 +247,6 @@ function initKeyboardNav() {
       utils.addFocusStyle(element);
       utils.scrollToElement(element);
 
-      // Announce navigation
       const typeNames = {
         headers: "header",
         links: "link",
@@ -288,16 +264,12 @@ function initKeyboardNav() {
     },
   };
 
-  // Event handlers
   const eventHandlers = {
-    // Handle keydown events
     handleKeyDown(event) {
-      // Ignore if not active or if modifier keys are pressed
       if (!state.isActive || event.ctrlKey || event.altKey || event.metaKey) {
         return;
       }
 
-      // Check if form field is focused and ignore navigation keys
       if (
         utils.isFormFieldFocused() &&
         [CONFIG.keys.HEADER, CONFIG.keys.LINK, CONFIG.keys.LANDMARK].includes(
@@ -344,20 +316,17 @@ function initKeyboardNav() {
       }
     },
 
-    // Handle focus events to remove custom styling when native focus occurs
     handleFocusIn(event) {
       if (event.target !== state.lastFocusedElement) {
         utils.removeFocusStyle();
       }
     },
 
-    // Handle DOM mutations
     handleMutation(mutations) {
       let shouldUpdate = false;
 
       mutations.forEach((mutation) => {
         if (mutation.type === "childList") {
-          // Check if any added/removed nodes affect our elements
           const checkNodes = (nodes) => {
             for (let node of nodes) {
               if (node.nodeType === Node.ELEMENT_NODE) {
@@ -383,7 +352,6 @@ function initKeyboardNav() {
       });
 
       if (shouldUpdate) {
-        // Debounce updates to avoid excessive recalculation
         clearTimeout(elementManager.updateTimeout);
         elementManager.updateTimeout = setTimeout(() => {
           elementManager.collectElements();
@@ -392,21 +360,16 @@ function initKeyboardNav() {
     },
   };
 
-  // Initialization
   const init = () => {
-    // Inject CSS styles
     const styleElement = document.createElement("style");
     styleElement.textContent = CONFIG.styles.css;
     document.head.appendChild(styleElement);
 
-    // Collect initial elements
     elementManager.collectElements();
 
-    // Set up event listeners
     document.addEventListener("keydown", eventHandlers.handleKeyDown, true);
     document.addEventListener("focusin", eventHandlers.handleFocusIn, true);
 
-    // Set up MutationObserver for dynamic content
     const observer = new MutationObserver(eventHandlers.handleMutation);
     observer.observe(document.body, {
       childList: true,
@@ -415,19 +378,16 @@ function initKeyboardNav() {
       attributeFilter: ["style", "class", "hidden"],
     });
 
-    // Handle page visibility changes
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         utils.removeFocusStyle();
       }
     });
 
-    // Initial announcement
     utils.notifyScreenReader(
       "Keyboard navigation enabled. Use H for headers, L for links, M for landmarks. Arrow keys change flow."
     );
 
-    // Return cleanup function
     return () => {
       state.isActive = false;
       utils.removeFocusStyle();
@@ -448,12 +408,9 @@ function initKeyboardNav() {
     };
   };
 
-  // Public API
   const api = {
-    // Initialize the navigation utility
     init,
 
-    // Toggle navigation on/off
     toggle() {
       state.isActive = !state.isActive;
       if (!state.isActive) {
@@ -464,7 +421,6 @@ function initKeyboardNav() {
       );
     },
 
-    // Get current state (for debugging)
     getState() {
       return {
         flow: state.flow,
@@ -478,26 +434,21 @@ function initKeyboardNav() {
       };
     },
 
-    // Manually refresh elements
     refresh() {
       elementManager.collectElements();
       utils.notifyScreenReader("Navigation elements refreshed");
     },
   };
 
-  // Auto-initialize and return API
   const cleanup = init();
 
-  // Add cleanup to API
   api.cleanup = cleanup;
 
   return api;
 }
 
-// Initialize keyboard navigation
 const keyboardNav = initKeyboardNav();
 
-// Demo functions for dynamic content
 let dynamicCounter = 0;
 
 function addContent() {
@@ -543,16 +494,13 @@ function addHeaders() {
   container.appendChild(headerContainer);
 }
 
-// Prevent form submission for demo
 document.querySelector("form").addEventListener("submit", function (e) {
   e.preventDefault();
   alert("Form submission prevented for demo purposes");
 });
 
-// Log when elements are navigated
 const originalAnnounceFn = keyboardNav.notifyScreenReader;
 
-// Add visual feedback for successful initialization
 setTimeout(() => {
   const status = document.createElement("div");
   status.style.cssText = `
