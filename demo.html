@@ -1,0 +1,45 @@
+<!-- demo.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Keyboard Navigation Demo</title>
+  <script src="navigationAZ.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      line-height: 1.6;
+    }
+    section {
+      margin: 2rem 0;
+      padding: 1rem;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <header><h1>Welcome</h1></header>
+  <nav><a href="#section1">Go to Section 1</a></nav>
+
+  <main>
+    <section id="section1">
+      <h2>Section 1</h2>
+      <p>This is some content. <a href="#">Click here</a></p>
+    </section>
+
+    <section>
+      <h3>Section 2</h3>
+      <form>
+        <input type="text" placeholder="Enter text" />
+        <button type="submit">Submit</button>
+      </form>
+    </section>
+
+    <footer><p>&copy; 2025</p></footer>
+  </main>
+
+  <script>
+    initKeyboardNav();
+  </script>
+</body>
+</html>
