@@ -62,13 +62,13 @@ function initKeyboardNav() {
 
   // State management
   let state = {
-    direction: "forward", // 'forward' or 'backward'
+    flow: "forward",
     elements: {
       headers: [],
       links: [],
       landmarks: [],
     },
-    currentIndices: {
+    defaultIndices: {
       headers: -1,
       links: -1,
       landmarks: -1,
@@ -203,7 +203,7 @@ function initKeyboardNav() {
     },
 
     // Announce to screen readers
-    announceToScreenReader(message) {
+    notifyScreenReader(message) {
       const announcement = document.createElement("div");
       announcement.setAttribute("aria-live", "polite");
       announcement.setAttribute("aria-atomic", "true");
@@ -236,26 +236,26 @@ function initKeyboardNav() {
       );
 
       // Reset indices when elements change
-      state.currentIndices.headers = -1;
-      state.currentIndices.links = -1;
-      state.currentIndices.landmarks = -1;
+      state.defaultIndices.headers = -1;
+      state.defaultIndices.links = -1;
+      state.defaultIndices.landmarks = -1;
     },
 
-    // Get next element in specified direction
+    // Get next element in specified flow
     getNextElement(type) {
       const elements = state.elements[type];
       if (!elements || elements.length === 0) return null;
 
-      let currentIndex = state.currentIndices[type];
+      let currentIndex = state.defaultIndices[type];
 
-      if (state.direction === "forward") {
+      if (state.flow === "forward") {
         currentIndex = (currentIndex + 1) % elements.length;
       } else {
         currentIndex =
           currentIndex <= 0 ? elements.length - 1 : currentIndex - 1;
       }
 
-      state.currentIndices[type] = currentIndex;
+      state.defaultIndices[type] = currentIndex;
       return elements[currentIndex];
     },
 
@@ -263,7 +263,7 @@ function initKeyboardNav() {
     navigateToNext(type) {
       const element = this.getNextElement(type);
       if (!element) {
-        utils.announceToScreenReader(`No ${type} found`);
+        utils.notifyScreenReader(`No ${type} found`);
         return;
       }
 
@@ -284,7 +284,7 @@ function initKeyboardNav() {
         announcement = `${element.tagName.toLowerCase()}: ${element.textContent?.trim()}`;
       }
 
-      utils.announceToScreenReader(announcement);
+      utils.notifyScreenReader(announcement);
     },
   };
 
@@ -311,14 +311,14 @@ function initKeyboardNav() {
 
       switch (event.code) {
         case CONFIG.keys.ARROW_UP:
-          state.direction = "backward";
-          utils.announceToScreenReader("Navigation direction: backward");
+          state.flow = "backward";
+          utils.notifyScreenReader("Navigation flow: backward");
           handled = true;
           break;
 
         case CONFIG.keys.ARROW_DOWN:
-          state.direction = "forward";
-          utils.announceToScreenReader("Navigation direction: forward");
+          state.flow = "forward";
+          utils.notifyScreenReader("Navigation flow: forward");
           handled = true;
           break;
 
@@ -423,8 +423,8 @@ function initKeyboardNav() {
     });
 
     // Initial announcement
-    utils.announceToScreenReader(
-      "Keyboard navigation enabled. Use H for headers, L for links, M for landmarks. Arrow keys change direction."
+    utils.notifyScreenReader(
+      "Keyboard navigation enabled. Use H for headers, L for links, M for landmarks. Arrow keys change flow."
     );
 
     // Return cleanup function
@@ -459,7 +459,7 @@ function initKeyboardNav() {
       if (!state.isActive) {
         utils.removeFocusStyle();
       }
-      utils.announceToScreenReader(
+      utils.notifyScreenReader(
         `Keyboard navigation ${state.isActive ? "enabled" : "disabled"}`
       );
     },
@@ -467,13 +467,13 @@ function initKeyboardNav() {
     // Get current state (for debugging)
     getState() {
       return {
-        direction: state.direction,
+        flow: state.flow,
         elementCounts: {
           headers: state.elements.headers.length,
           links: state.elements.links.length,
           landmarks: state.elements.landmarks.length,
         },
-        currentIndices: { ...state.currentIndices },
+        defaultIndices: { ...state.defaultIndices },
         isActive: state.isActive,
       };
     },
@@ -481,7 +481,7 @@ function initKeyboardNav() {
     // Manually refresh elements
     refresh() {
       elementManager.collectElements();
-      utils.announceToScreenReader("Navigation elements refreshed");
+      utils.notifyScreenReader("Navigation elements refreshed");
     },
   };
 
@@ -550,7 +550,7 @@ document.querySelector("form").addEventListener("submit", function (e) {
 });
 
 // Log when elements are navigated
-const originalAnnounceFn = keyboardNav.announceToScreenReader;
+const originalAnnounceFn = keyboardNav.notifyScreenReader;
 
 // Add visual feedback for successful initialization
 setTimeout(() => {
